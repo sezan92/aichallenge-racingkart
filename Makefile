@@ -164,6 +164,5 @@ download:
 			vehicle/download_submission.sh --output aichallenge/workspace/src/; \
 		fi; \
 	fi
-
 rviz-novnc:
-    docker compose up -d rviz-novnc
+	docker compose up -d rviz-novnc

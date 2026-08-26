@@ -1,0 +1,30 @@
+#!/bin/bash
+
+# dev mode with camera + LiDAR enabled (for E2E data collection / pilot_net).
+# Same as dev.sh but sensors on (GPU rendering available via gpu compose overlay).
+
+AWSIM_DIRECTORY=/aichallenge/simulator/AWSIM
+export ROS_DOMAIN_ID=0
+
+# 車両数: 第1引数（既定 1）
+vehicles="${1:-1}"
+
+exec $AWSIM_DIRECTORY/AWSIM.x86_64 \
+    --venue citycircuit \
+    --start-mode count \
+    --start-count-seconds 5 \
+    --vehicles "${vehicles}" \
+    --npcs 0 \
+    --boosts 2 \
+    --laps unlimited \
+    --timeout 10000000.0 \
+    --steer-source ackermann \
+    --sound off \
+    --collisions on \
+    --handicap off \
+    --wall-recovery off \
+    --ranking off \
+    --camera gpu \
+    --lidar gpu
+
+# GPUがない場合 -headlessを末尾に追加 / --camera cpu --lidar cpu に変更

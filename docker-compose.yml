@@ -136,7 +136,7 @@ services:
     <<: *autoware-base
     ports:
       - "6080:6080"  # noVNC web interface
-    command: ["bash", "-lc", "exec /aichallenge/utils/run_rviz_novnc.bash"]
+    command: ["bash", "-lc", "exec /aichallenge/utils/run_rviz_novnc.bash remote"]
 
 #### vehicle specific services can be added here ####
   # Zenoh service

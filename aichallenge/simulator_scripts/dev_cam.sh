@@ -24,7 +24,7 @@ exec $AWSIM_DIRECTORY/AWSIM.x86_64 \
     --handicap off \
     --wall-recovery off \
     --ranking off \
-    --camera gpu \
-    --lidar gpu
+    --camera cpu \
+    --lidar cpu
 
 # GPUがない場合 -headlessを末尾に追加 / --camera cpu --lidar cpu に変更

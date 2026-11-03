@@ -4,6 +4,9 @@
   <arg name="use_obstacle_avoidance" default="false"/>
   <!-- Track selection: citycircuit uses config.yaml/ref_vel.yaml; other tracks use config_<track>.yaml/ref_vel_<track>.yaml -->
   <arg name="track" default="citycircuit"/>
+  <!-- Output topic for the control command. The hybrid mode remaps this so the
+       arbitrator can forward MPC commands to /control/command/control_cmd. -->
+  <arg name="control_cmd_topic" default="/control/command/control_cmd"/>
   <arg name="config_file" default="$(eval &quot;'config.yaml' if '$(var track)' == 'citycircuit' else 'config_' + '$(var track)' + '.yaml'&quot;)"/>
   <arg name="ref_vel_file" default="$(eval &quot;'ref_vel.yaml' if '$(var track)' == 'citycircuit' else 'ref_vel_' + '$(var track)' + '.yaml'&quot;)"/>
 
@@ -15,5 +18,6 @@
     <param name="use_boost_acceleration" value="false"/>
     <param name="use_obstacle_avoidance" value="$(var use_obstacle_avoidance)"/>
     <param name="use_stats" value="false"/>
+    <remap from="/control/command/control_cmd" to="$(var control_cmd_topic)"/>
   </node>
 </launch>

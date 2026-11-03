@@ -1,0 +1,50 @@
+/**:
+  ros__parameters:
+    # Controller used in nominal (non-critical) situations.
+    # Supported values: "pilot_net", "mpc"
+    default_controller: "pilot_net"
+
+    # Rate at which the selected command is forwarded to the vehicle.
+    publish_rate_hz: 50.0
+
+    # Topic configuration
+    output_cmd_topic: "/control/command/control_cmd"
+    pilot_net_cmd_topic: "/control/command/control_cmd_pilot"
+    mpc_cmd_topic: "/control/command/control_cmd_mpc"
+    lidar_topic: "/sensing/lidar/scan"
+    odom_topic: "/localization/kinematic_state"
+    stop_request_topic: "/control/mpc/stop_request"
+
+    watchdog:
+      # A controller is considered stale (and its command is not forwarded)
+      # if no new command arrived within this window.
+      # MPC runs at 40 Hz -> 0.25 s ~= 10 missed cycles.
+      pilot_net_timeout_sec: 0.5
+      mpc_timeout_sec: 0.25
+
+    monitor:
+      # Critical if the nearest LiDAR return is closer than
+      # lidar_min_range_m + current_speed * speed_margin_per_mps.
+      use_lidar_proximity: false
+      lidar_min_range_m: 3.0
+      speed_margin_per_mps: 0.5
+
+      # Critical if both controllers are fresh and their steering commands
+      # disagree by more than this amount (PilotNet doing something the
+      # physics-based planner disagrees with).
+      # NOTE: both commands are compared on the published (gain-applied) scale.
+      use_steer_disagreement: true
+      steer_disagreement_rad: 0.20
+
+    hysteresis:
+      # Switch to MPC only after this many consecutive critical cycles
+      # (at 50 Hz, 10 cycles = 0.2 s). Prevents single-frame glitches.
+      engage_critical_cycles: 10
+      # Return to the default controller only after being continuously
+      # non-critical for this long. Prevents chattering at the boundary.
+      release_safe_sec: 3.0
+
+    failsafe:
+      # Longitudinal acceleration used when BOTH controllers are stale.
+      # Matches multi_purpose_mpc_ros mpc.a_min.
+      deceleration_mps2: -1.6

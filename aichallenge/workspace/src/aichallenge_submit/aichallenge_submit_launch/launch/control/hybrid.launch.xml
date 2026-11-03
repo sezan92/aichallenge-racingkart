@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch>
+  <arg name="use_sim_time" default="true"/>
+  <arg name="track" default="citycircuit"/>
+
+  <!-- MPC: commands are sent to a private topic; the arbitrator forwards them
+       to /control/command/control_cmd only when it selects MPC. -->
+  <include file="$(find-pkg-share aichallenge_submit_launch)/launch/control/mpc.launch.xml">
+    <arg name="use_sim_time" value="$(var use_sim_time)"/>
+    <arg name="track" value="$(var track)"/>
+    <arg name="control_cmd_topic" value="/control/command/control_cmd_mpc"/>
+  </include>
+
+  <!-- PilotNet: same pattern via its existing control_cmd_topic arg. -->
+  <include file="$(find-pkg-share pilot_net_controller)/launch/pilot_net.launch.xml">
+    <arg name="use_sim_time" value="$(var use_sim_time)"/>
+    <arg name="image_topic" value="/sensing/camera/image_raw"/>
+    <arg name="control_cmd_topic" value="/control/command/control_cmd_pilot"/>
+  </include>
+
+
+  <!-- Arbitrator: selects between the two and publishes the vehicle command. -->
+  <include file="$(find-pkg-share hybrid_control_arbitrator)/launch/hybrid_control_arbitrator.launch.xml">
+    <arg name="use_sim_time" value="$(var use_sim_time)"/>
+  </include>
+</launch>

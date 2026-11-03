@@ -1,0 +1,14 @@
+<launch>
+
+  <arg name="use_sim_time" default="true"/>
+  <arg name="param_file" default="$(find-pkg-share hybrid_control_arbitrator)/config/hybrid_control_arbitrator.param.yaml"/>
+
+  <node pkg="hybrid_control_arbitrator"
+        exec="hybrid_control_arbitrator_node.py"
+        name="hybrid_control_arbitrator"
+        output="screen">
+    <param from="$(var param_file)"/>
+    <param name="use_sim_time" value="$(var use_sim_time)"/>
+  </node>
+
+</launch>

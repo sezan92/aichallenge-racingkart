@@ -1,0 +1,5 @@
+optuna>=3.4
+pyyaml
+numpy
+scipy
+rclpy  # (from ROS 2 environment)

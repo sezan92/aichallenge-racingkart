@@ -12,15 +12,13 @@ import json
 import os
 import shutil
 import subprocess
-import sys
-import tempfile
 import time
 from pathlib import Path
-from typing import Dict, Optional, Tuple
+from typing import Dict, Optional
 
-import numpy as np
 import optuna
 import yaml
+import re
 
 # ── Paths ──────────────────────────────────────────────────────
 AICHALLENGE_DIR = Path("/aichallenge")
@@ -183,8 +181,6 @@ def parse_results(output_dir: Path) -> Optional[Dict]:
 
     return result
 
-
-# ── Objective Function ────────────────────────────────────────
 def objective(trial: optuna.Trial, controller: str, metric: str) -> float:
     """Optuna objective: minimize the chosen metric."""
     # 1. Suggest parameters
@@ -226,13 +222,15 @@ def objective(trial: optuna.Trial, controller: str, metric: str) -> float:
 
     elif metric == "composite":
         # Multi-objective: lap_time + penalty + consistency
+        PENALTY_SCORE_WEIGHT=5.0
+        CONSISTENCY_WEIGHT=2.0
         if result["lap_count"] == 0:
             return float("inf")
         lap_score = result["min_lap_time"]
-        penalty_score = result["penalty_total_seconds"] * 5.0  # heavy penalty
+        penalty_score = result["penalty_total_seconds"] * PENALTY_SCORE_WEIGHT  # heavy penalty
         consistency = (
             result["avg_lap_time"] - result["min_lap_time"]
-        ) * 2.0  # penalize inconsistency
+        ) * CONSISTENCY_WEIGHT  # penalize inconsistency
         return lap_score + penalty_score + consistency
 
     elif metric == "avg_lap_time":
@@ -245,7 +243,6 @@ def objective(trial: optuna.Trial, controller: str, metric: str) -> float:
 
 # ── Helpers ───────────────────────────────────────────────────
 def _replace_xml_param(xml: str, name: str, value: float) -> str:
-    import re
     pattern = rf'(<param\s+name="{name}"\s+value=")[^"]*(")'
     return re.sub(pattern, rf'\g<1>{value}\2', xml)
 
